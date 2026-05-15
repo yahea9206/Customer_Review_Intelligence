@@ -16,18 +16,35 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # 2. تحميل البيانات
+# 2. تحميل البيانات (نسخة مطورة لتقبل أي ملف)
 if 'df' not in st.session_state:
     try:
-        # تأكد من المسار الصحيح للملف
-        st.session_state.df = pd.read_csv('processed-data.csv')
-    except:
-        # بيانات تجريبية (Sample) في حال عدم وجود الملف
+        # قراءة الملف اللي أنت رفعته
+        temp_df = pd.read_csv('processed-data.csv')
+        
+        # التأكد من وجود الأعمدة المطلوبة أو إنشائها لو مش موجودة
+        if 'sentiment' not in temp_df.columns:
+            temp_df['sentiment'] = 'positive' # قيمة افتراضية مؤقتة
+        if 'topic' not in temp_df.columns:
+            temp_df['topic'] = 'General'
+        if 'text' not in temp_df.columns:
+            # لو اسم العمود عندك مختلف (مثلاً reviews.text) خليه يبقى اسمه text
+            # بنحاول ندور على أي عمود فيه كلمة text
+            text_col = [col for col in temp_df.columns if 'text' in col.lower()]
+            if text_col:
+                temp_df = temp_df.rename(columns={text_col[0]: 'text'})
+            else:
+                temp_df['text'] = "No text found"
+
+        st.session_state.df = temp_df
+    except Exception as e:
+        # بيانات تجريبية في حالة الفشل التام
         data = {
-            'text': ['المنتج ممتاز جداً وانصح به', 'جودة سيئة وتوصيل متأخر', 'المنتج عادي ليس به ميزة', 'تجربة رائعة وسرعة في الرد', 'سعر مرتفع مقابل جودة قليلة'],
-            'sentiment': ['positive', 'negative', 'neutral', 'positive', 'negative'],
-            'score': [0.95, 0.88, 0.50, 0.92, 0.75],
-            'topic': ['Product Quality', 'Delivery', 'Pricing', 'Customer Service', 'Pricing'],
-            'date': ['2026-05-10', '2026-05-11', '2026-05-12', '2026-05-13', '2026-05-14']
+            'text': ['Error loading file: ' + str(e)],
+            'sentiment': ['neutral'],
+            'score': [0],
+            'topic': ['System'],
+            'date': ['2026-05-15']
         }
         st.session_state.df = pd.DataFrame(data)
 
