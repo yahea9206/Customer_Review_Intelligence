@@ -79,6 +79,21 @@ with st.sidebar:
     st.write("**Pipeline Status:** 🟢 Active")
     st.write(f"**Total Sample Records:** {len(df)}")
     st.caption("System Dashboard v3.0")
+    # --- جزء تحميل الـ Report الجديد ---
+    st.markdown("---")
+    st.write("📂 **Project Documentation**")
+    try:
+        # افتح الملف (غير اسم 'report.pdf' لاسم ملفك الحقيقي بالظبط والـ Extension بتاعه)
+        with open("report.pdf", "rb") as file:
+            st.download_button(
+                label="📄 Download Full Report",
+                data=file,
+                file_name="Executive_Project_Report.pdf",
+                mime="application/pdf",
+                use_container_width=True
+            )
+    except FileNotFoundError:
+        st.warning("⚠️ ملف report.pdf غير موجود في الفولدر الرئيسي للمشروع.")
 
 # 4. شاشة العرض الأساسية التفاعلية
 if menu == "Overview":
