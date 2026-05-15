@@ -108,5 +108,4 @@ elif page == "🤖 AI Assistant":
     if user_input:
         st.success(f"AI is analyzing clusters for: '{user_input}'")
         st.write("Top finding: Most customers mentioning this are happy with 'Shipping Speed'.")
-
----
+        
