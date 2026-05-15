@@ -19,7 +19,7 @@ st.markdown("""
 if 'df' not in st.session_state:
     try:
         # تأكد من المسار الصحيح للملف
-        st.session_state.df = pd.read_csv('backend/data/processed_data.csv')
+        st.session_state.df = pd.read_csv('backend/data/processed-data.csv')
     except:
         # بيانات تجريبية (Sample) في حال عدم وجود الملف
         data = {
