@@ -145,15 +145,33 @@ elif menu == "Sentiment Detail":
 
 elif menu == "Topic Analysis":
     st.title("🏷️ Topic Mapping & Clusters")
-    st.info("The system automatically mapped the following active customer topics:")
-    # عرض جميع الـ Topics المضافة بشكل كروت جنب بعضها
-    cols = st.columns(3)
-    for i, t in enumerate(df['topic'].unique()):
-        cols[i % 3].markdown(f"""
-        <div style="background:#1c2128; padding:20px; border-radius:8px; border:1px solid #30363d; margin-bottom:10px; text-align:center;">
-            <h4 style="color:#58a6ff; margin:0;">📌 {t}</h4>
-        </div>
-        """, unsafe_allow_html=True)
+    st.info("اضغط على اسم الموضوع بالأسفل لعرض ريفيوهات العملاء الخاصة به فوراً:")
+    
+    if 'topic' in df.columns:
+        # ترتيب المواضيع أبجدياً وعرضها
+        for t in sorted(df['topic'].unique()):
+            # إنشاء كارت تفاعلي يفتح ويغلق عند الضغط عليه
+            with st.expander(f"📌 {t}", expanded=False):
+                # فلترة الريفيوهات الخاصة بهذا الموضوع
+                topic_reviews = df[df['topic'] == t]
+                
+                if not topic_reviews.empty:
+                    st.markdown(f"**عدد المراجعات المتاحة: ({len(topic_reviews)})**")
+                    # عرض أول 10 مراجعات فقط لضمان سرعة الصفحة
+                    for _, row in topic_reviews.head(10).iterrows():
+                        # تحديد لون الجانب بناءً على نوع المشاعر
+                        color = "#238636" if row['sentiment'] == 'positive' else "#da3633" if row['sentiment'] == 'negative' else "#1f6feb"
+                        
+                        st.markdown(f"""
+                        <div class="review-card" style="border-left-color: {color}; margin-bottom: 8px;">
+                            <strong style="color:{color}; font-size: 12px;">{row['sentiment'].upper()}</strong><br>
+                            <span style="color:#adbac7;">"{row['text']}"</span>
+                        </div>
+                        """, unsafe_allow_html=True)
+                else:
+                    st.write("لا توجد ريفيوهات متاحة لهذا الموضوع حالياً.")
+    else:
+        st.error("لم يتم العثور على عمود 'topic' في البيانات المرفوعة.")
 
 elif menu == "AI Chatbot (Beta)":
     st.title("🤖 Review AI Assistant")
