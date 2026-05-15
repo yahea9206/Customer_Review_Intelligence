@@ -79,22 +79,42 @@ with st.sidebar:
     st.write("**Pipeline Status:** 🟢 Active")
     st.write(f"**Total Sample Records:** {len(df)}")
     st.caption("System Dashboard v3.0")
-    # --- جزء تحميل الـ Report الجديد ---
+   
+ # --- جزء معالجة ملف الـ Report المطور (.md) ---
     st.markdown("---")
     st.write("📂 **Project Documentation**")
-    try:
-        # افتح الملف (غير اسم 'report.pdf' لاسم ملفك الحقيقي بالظبط والـ Extension بتاعه)
-        with open("report.pdf", "rb") as file:
-            st.download_button(
-                label="📄 Download Full Report",
-                data=file,
-                file_name="Executive_Project_Report.pdf",
-                mime="application/pdf",
-                use_container_width=True
-            )
-    except FileNotFoundError:
-        st.warning("⚠️ ملف report.pdf غير موجود في الفولدر الرئيسي للمشروع.")
+    
+    import os
 
+    # اسم الملف المرفوع عندك بالظبط
+    md_file_name = "Final_Report.md"
+    report_content = None
+
+    # قراءة الملف مباشرة من الفولدر الرئيسي بدون كاش
+    if os.path.exists(md_file_name):
+        try:
+            with open(md_file_name, "r", encoding="utf-8") as file:
+                report_content = file.read()
+        except Exception as e:
+            st.error(f"حدث خطأ أثناء قراءة الملف: {e}")
+
+    if report_content is not None:
+        # 1. زر تحميل الملف الأصلي
+        st.download_button(
+            label="📥 Download Markdown Report",
+            data=report_content,
+            file_name="Final_Report.md",
+            mime="text/markdown",
+            use_container_width=True
+        )
+        
+        # 2. زر تفاعلي لعرض التقرير داخل التطبيق
+        if st.button("📖 View Report inside App", use_container_width=True):
+            st.info("💡 تم فتح التقرير بنجاح! اقرأه بالأسفل داخل القائمة الجانبية:")
+            with st.expander("📝 Report Document Content", expanded=True):
+                st.markdown(report_content)
+    else:
+        st.warning("⚠️ لم يتم العثور على Final_Report.md. تأكد من عمل Clear Cache للتطبيق.")
 # 4. شاشة العرض الأساسية التفاعلية
 if menu == "Overview":
     st.title("Strategic Summary")
